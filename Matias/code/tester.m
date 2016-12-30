@@ -1,11 +1,10 @@
 clear all;
-%clc;
 
 %% Variables
 % For each of N channels assign no. of bits and genration of the data stream
 % such that sum of all (bits/subchannel) = the data length.
-N=32; %No. of sub-channels
-v=5; % Cyclic prefix length
+N = 32; %No. of sub-channels
+v = 5; % Cyclic prefix length
 h1=[1 0.5 0.3 0.2 -0.1 0.02 0.05 0.08 0.01]; % channel impulse response.
 h = h1(1);
 
@@ -29,13 +28,17 @@ for i = 1:N-1
 end
 
 %% QAM
+x_qam = [];
 for i = 1:N-1
     mat_bi = vec2mat(data{i}, log2(allocation_table(i)));
-    mat_de = bi2de(mat_bi);
-    data_qam{i} = qammod(mat_de, allocation_table(i));
+    mat_de = bi2de(mat_bi)';
+    x_qam = [x_qam qammod(mat_de, allocation_table(i))];
 end
 
 %% DMT
-for i = 1:N-1
-    data_dmt{i} = ifft([1 complex_symbol 1 fliplr(conj(complex_symbol))], 2*N);
-end
+% Calcuate the IFFT of the encoded complex symbol.
+x_dmt = ifft([1 x_qam 1 fliplr(conj(x_qam))]);
+
+%% Cyclic prefix
+% Define a cyclic prefix length and add the cyclic prefix to the serailized data stream.
+x = [x_dmt(2*N+1 - v:2*N) x_dmt];

@@ -1,5 +1,32 @@
-http://adslproject.free.fr/telechargements.htm
+What is DMT?
 
-Matias
-file:///C:/Users/Matias/Downloads/ATP_ADSL_2015_v3.pdf
-http://eu.wiley.com/WileyCDA/WileyTitle/productCd-0471290998.html
+DMT (Discrete Multi Tone) is a method of converting digital data into tones or frequencies that can be carried over telephone wire. Called 'Multi-tone' because it splits the available frequencies into a defined number of smaller sub-channels or tones and 'Discrete' from the mathematical term meaning distinct or separate.
+
+255 carriers (bins) centred on multiples of 4.3125 kHz
+The frequency spacing, ∆f, between subcarriers is 4.3125 kHz, with a tolerance of ±50 ppm
+maximum of 255 carriers (at frequencies n∆f , n = 1 to 255)
+DMT has 224 downstream frequency bins and up to 31 upstream bins
+
+Pilot
+Carrier #Npilot (fpilot = 4.3125 × Npilot kHz) shall be reserved for a pilot; that is b(Npilot) = 0 and
+g(Npilot) = gsync.
+
+The carrier at the Nyquist frequency (#256) shall not be used for user data and shall be real valued;
+other possible uses are for further study.
+
+The carrier at DC (#0) shall not be used, and shall contain no energy. 
+
+Bit Allocation
+
+Each tone is capable of carrying up to 15 bits regardless of the frequency at which it is transmitted. The amount of bits actually allocated to the bin purely depends on the SNR for that particular bin.
+DMT allocates from 2 to 15 bits per channel (bin).
+As line conditions change, bit swapping allows the modem to swap bits around different channels, without retraining, as each channel becomes more or less capable. If bit swapping is disabled then this does not happen and the modem needs to retrain in order to adapt to changing line conditions.
+
+=================================
+dudas
+/ porque ber y no ser?
+- cual es el punto de hacer dmt? porque no cambiar la frecuencia en qam?
+- porque max qam 15 y no 16?
+- min qam 2? wtf, checkear
+- x_mod=ifft([1 complex_symbol 1 fliplr(conj(complex_symbol))],2*N);
+- cuales son las qam que valen?
