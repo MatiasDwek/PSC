@@ -1,0 +1,3 @@
+function suite_symb=modulationQAM(Xi,Xq,M)
+
+suite_symb=qammod(complex(Xi,Xq),M);
