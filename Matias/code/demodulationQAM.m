@@ -1,12 +1,8 @@
-function suite_symb=demodulationQAM(Xi,Xq,M)
+function data_rcv = demodulationQAM(y_qam, allocation_table)
 
-% Associe aux symboles complexes, leur ecriture decimale en fonction 
-% de symbole complexe de partie reelle Xi et imaginaire Xq 
-% dans la cas d'une demodulation M-QAM.
-
-% Xi est la partie reelle du symbole complexe.
-% Xq est la partie imaginaire du symbole complexe.
-% M est le nombre de points de la constellation.
-
-
-suite_symb=qamdemod(complex(Xi,Xq),M); % Démodule les symboles sur une constellation de M points
+N = length(allocation_table) + 1;
+data_rcv = [];
+for i = 1:N-1
+    symbol_rcv = qamdemod(y_qam(i), 2^allocation_table(i));
+    data_rcv = [data_rcv de2bi(symbol_rcv, allocation_table(i))];
+end

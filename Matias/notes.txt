@@ -22,11 +22,13 @@ Each tone is capable of carrying up to 15 bits regardless of the frequency at wh
 DMT allocates from 2 to 15 bits per channel (bin).
 As line conditions change, bit swapping allows the modem to swap bits around different channels, without retraining, as each channel becomes more or less capable. If bit swapping is disabled then this does not happen and the modem needs to retrain in order to adapt to changing line conditions.
 
+The receiver has a matched filter to each transmit bandpass filter.
+
 =================================
 dudas
 / porque ber y no ser?
-- cual es el punto de hacer dmt? porque no cambiar la frecuencia en qam?
-- porque max qam 15 y no 16?
-- min qam 2? wtf, checkear
-- x_mod=ifft([1 complex_symbol 1 fliplr(conj(complex_symbol))],2*N);
++ cual es el punto de hacer dmt? porque no cambiar la frecuencia en qam?
++ porque max qam 15 y no 16?
+/ min qam 2? wtf, checkear
+/ x_mod=ifft([1 complex_symbol 1 fliplr(conj(complex_symbol))], 2*N);
 - cuales son las qam que valen?

@@ -1,2 +1,5 @@
--amplitude/waterfilling QAM
--filtre de mise en forme
+-amplitude/waterfilling QAM (linpei + naslaty)
+-filtre de mise en forme (vincent <3)
+-estimation canal
+-allocation de bit verifier formule
+-prefixe cyclique length
