@@ -1,0 +1,135 @@
+clear all; close all;
+
+%% Variables 
+
+N = 255;
+K = 239;
+d = 5;
+n = 2;
+words_length = 8;
+dataIn = [];
+dataOut=[];
+supertrame = [];
+gp = rsgenpoly(N,K,[],0);
+enc = comm.RSEncoder(N,K, gp); 
+dec = comm.RSDecoder(N,K, gp);
+scr = comm.Scrambler(N+1,[0 -19 -23], zeros(23,1));
+dscr = comm.Descrambler(N+1,[0 -19 -23], zeros(23,1));
+errorRate = comm.ErrorRate('ComputationDelay',3);
+
+cyclic_prefix = 40; % Cyclic prefix length 40
+super_number = 10;
+
+H = rep_impulsionnelle_canal(1000, .8e-3);
+max(abs(H));
+Hr = [H(1:256) 0 conj(fliplr(H(1:256))) ];
+h = ifft(Hr, 'symmetric');
+
+%% TRANSMISSION
+
+%% Bit Allocation
+allocation_table = zeros(1, N);
+for i = 1:N
+    % Since the SNR of each subchannel is unknown, bit loading is random
+    % allocation_table(i) = ceil(rand*15); %Each tone is capable of
+    % carrying
+    % up to 15 bits regardless of the frequency at which it is transmitted.
+    allocation_table(i) = 8;
+end
+
+words2 = [];
+for i = 1 : super_number
+    
+    if i == 1 || i == 34 || i == 35 || i == 69
+        
+        data = zeros((K-4) * words_length, 1); % Trame de controles
+        
+    else
+        
+        data = randi([0 1], (K-4) * words_length, 1); % Generation de Data
+        dataIn = [dataIn ; data];
+   
+    end
+    
+    % CRC
+
+    crcBin = calcul_CRC(data, K-4); % CRC coding
+
+    % FEC & RS
+
+    words = bin2int(crcBin, words_length); % Binaire vers mots
+    words2 = [words2 ; words];
+    scrWords = step(scr, words); % Scrambler c
+    encWords = step(enc, scrWords); % Codieur RS
+    wordsToBin = int2bin(encWords, words_length); % Mots vers binaire
+
+    % Interleaver convolutionnel
+
+    itlvBin = interConv(wordsToBin, d, n, 0);
+    
+    % QAM
+    x_qam = modulationQAM(itlvBin', allocation_table);
+
+    % DMT
+    x_dmt = modulationDMT(x_qam, N+1, cyclic_prefix);
+    
+    % Ajout dans la supertrame
+    
+    supertrame = [supertrame x_dmt]; 
+    
+end
+
+%% CANAL 
+
+y_channel = conv(supertrame, h)';
+
+%% RECEPTION
+words3 = [];
+for i = 1 : super_number
+            
+    data = y_channel(1 : 552);
+    y_channel(1 : 552) = [];
+    
+    %% DMT demodulation
+    y_qam = demodulationDMT(data', h, N+1, cyclic_prefix);
+
+    %% QAM demodulation
+    data_rcv = demodulationQAM(y_qam, allocation_table)';
+    
+    % Interleaver convolutionnel
+    
+    deitlvBin = deinterConv(data_rcv, d, n); % Deinterleaver
+
+    % FEC & RS
+    
+    binToWords = bin2int(deitlvBin, words_length); % Binaire vers mots
+    decWords = step(dec, binToWords); % RS Decoding
+    dscrWords = step(dscr, decWords); % Descrambler
+    words3 = [words3 ; dscrWords];
+    crcBinIn = int2bin(dscrWords, words_length); % Mots vers binaire
+    
+    % CRC
+    
+    [erreur, data] = decalcul_CRC(crcBinIn, K-4); % CRC decodeur
+    
+    if i ~= 1 && i ~= 34 && i ~= 35 && i ~= 69
+
+        dataOut = [ dataOut ; data ]; 
+    
+    end 
+
+end
+
+%% ANALYSIS
+
+errorStats = step(errorRate, dataIn, dataOut);
+fprintf('RS coding : Error rate = %f\nNumber of errors = %d\n', errorStats(1), errorStats(2))
+
+mbre = 0;
+for i = 1 : length(words2)
+   if words2(i) ~= words3(i)
+       mbre = mbre + 1;
+   end
+end
+
+disp(mbre)

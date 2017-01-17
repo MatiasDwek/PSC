@@ -13,7 +13,8 @@ muCu = 1.5;                     % Permeabilite du cuivre
 epsilonV=(1/(36*pi))*10^-9;     % Permitivite de l'air
 epsilonR=1.5;                   % Permitivite de l'isolant
 rho=17*10^-9;                   % Resistivite du cuivre
-D= d/2;                         % Distance entre les fils
+D= d*1.5;                         % Distance entre les fils
+% D=1.5*d;
 %255 intervalles de  4,3125 kHz (0 to 1.1 MHz) 
 freq=(0:4.3125e3:1.104e6);      % Vecteur de frequence
 
@@ -21,11 +22,11 @@ freq=(0:4.3125e3:1.104e6);      % Vecteur de frequence
 %%%%%%%%%% Grandeurs Primaires %%%%%%%%%%%
 
 %Resistance
-R(1:256) = (sqrt((muV*muCu*rho)/(pi))*sqrt(freq(1:256))/d); 
+R(1:256) = (sqrt((muV*muCu*rho)/(pi))*sqrt(freq(1:256))/d);
 %Capacite
-C= (pi*epsilonV*epsilonR)/(log(D/d)+sqrt((D/d)^2-1));
+C= (pi*epsilonV*epsilonR)/log((D/d)+sqrt(((D/d)^2)-1));     
 %Inductance
-L= ((muV*muCu/pi)*log((D/d)+sqrt((D/d)^2-1)));                  
+L= ((muV*muCu/pi)*log((D/d)+sqrt(((D/d)^2)-1)))  ;       
 %Conductivite
 G = 2*10^-6; 
 
@@ -40,4 +41,21 @@ H(1:256)=0;
 for i=1:256
     H(i)=0.5*exp(-Gamma(i)*longueur);
 end;
+
+%%%%%%%%%% Graphes %%%%%%%%%%%
+
+% Hr = [H(1:256) 0 conj(fliplr(H(2:256))) ];
+% 
+% figure(2)
+% subplot(211);
+% 
+% plot(20*log(abs(Hr)));
+% title('h en freq')
+% 
+% subplot(212);
+% plot(ifft(Hr, 'symmetric'))
+% title('h en temporel')
+% grid on
+
+
 end

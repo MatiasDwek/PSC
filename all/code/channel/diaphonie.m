@@ -40,4 +40,32 @@ function [signal_diaph] = diaphonie(signal,longueur,diametre,nbSignalPerturbant)
     Next = ifft(DSPNext, tailleSignal);
     
     signal_diaph=signal+Fext+Next;              %signal prenant en compte la diaphonie
+    
+    
+%     %%%%%Graphe%%%%%
+%     %passage en dB
+%     NextdB = 10*log10(DSPNext/1e-3);
+%     FextdB = 10*log10(DSPFext/1e-3);
+%     %echelles
+%     scale = linspace(0,1.1e6,256);
+%     scale_time = linspace(0,13e-3, tailleSignal);
+%     
+%     figure
+%     subplot(2,2,1)
+%     plot(scale,FextdB)
+%     title('DSP Fext')
+%     subplot(2,2,2)
+%     plot(scale,NextdB)
+%     title('DSP Next')
+%     subplot(2,2,3)
+%     plot(scale_time,Fext)
+%     title('Fext en temps')
+%     subplot(2,2,4)
+%     plot(scale_time,Next)
+%     title('Next en temps')
+% 
+%     figure(22)
+%     plot(scale_time,signal_diaph)
+%     title('signal avec diaphonie')
+
 end
