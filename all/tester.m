@@ -11,6 +11,8 @@ H = rep_impulsionnelle_canal(2000, .8e-3);
 Hr = [H(1:256) 0 conj(fliplr(H(1:256))) ];
 h = ifft(Hr, 'symmetric');
 
+h_est = channelEstimation(N, h);
+
 %h = [1 0.5 0.3 0.2 -0.1 0.02 0.05 0.08 0.01]; % channel impulse response.
 
 %% Transmitter
@@ -21,7 +23,7 @@ for i = 1:N
     % allocation_table(i) = ceil(rand*15); %Each tone is capable of
     % carrying
     % up to 15 bits regardless of the frequency at which it is transmitted.
-    allocation_table(i) = ceil(10);
+    allocation_table(i) = ceil(8);
 end
 
 %% Data generation and assignment in each channel
@@ -45,8 +47,8 @@ x_qam = modulationQAM(data, allocation_table);
 x_dmt = modulationDMT(x_qam, N+1, cyclic_prefix);
 
 %% Channel
-%y_channel = canal(x_dmt, 1e3, 0.6, 25);
-y_channel = conv(x_dmt, h);
+y_channel = canal(x_dmt, 2000, .8e-3, 25);
+%y_channel = conv(x_dmt, h);
 
 %% Receiver
 %% DMT demodulation

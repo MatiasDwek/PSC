@@ -21,7 +21,7 @@ cyclic_prefix = 40; % Cyclic prefix length 40
 super_number = 10;
 
 H = rep_impulsionnelle_canal(1000, .8e-3);
-plot(log2(abs(H)));
+max(abs(H));
 Hr = [H(1:256) 0 conj(fliplr(H(1:256))) ];
 h = ifft(Hr, 'symmetric');
 
@@ -42,7 +42,7 @@ for i = 1 : super_number
     
     if i == 1 || i == 34 || i == 35 || i == 69
         
-        data = zeros((K-4) * words_length, 1); % Trame de controles
+        data = ones((K-4) * words_length, 1); % Trame de controles
         
     else
         
@@ -81,7 +81,8 @@ end
 
 %% CANAL 
 
-y_channel = conv(supertrame, h)';
+%y_channel = conv(supertrame, h)';
+y_channel = canal(supertrame, 1000, .8e-3, 25)';
 
 %% RECEPTION
 words3 = [];

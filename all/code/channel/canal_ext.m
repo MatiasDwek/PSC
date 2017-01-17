@@ -12,12 +12,9 @@ H=rep_impulsionnelle_canal(longueur,diametre);
 
 Hr = [H(1:256) 0 conj(fliplr(H(1:256))) ];
 h = ifft(Hr, 'symmetric');
-h=h(1:256);
-
 
 signal_filtre=conv(signal_module,h);
 [~,m]=size(signal_module);
-signal_filtre=signal_filtre(1:m);
 
 % %%%%%%%%Bruit thermique AWGN%%%%%%%
 k = 1.3806*10^-23;  %Constante de Boltzmann
@@ -34,22 +31,3 @@ signal_bruite=awgn(signal_filtre,snr);
 
 % %%%%%%%diaphonie%%%%%%%%
 signal_recu=diaphonie(signal_bruite,longueur,diametre,nbSignalPerturbant);
-
-%{
-%%%%%%%Graphe%%%%%%%
-scale_time = linspace(0,m,m);
-figure
-    subplot(2,2,1)
-    plot(scale_time,signal_module)
-    title('Signal')
-    subplot(2,2,2)
-    plot(scale_time,signal_filtre)
-    title('Signal filtre')
-    subplot(2,2,3)
-    plot(scale_time,signal_bruite)
-    title('Signal recu : bruit')
-    subplot(2,2,4)
-    plot(scale_time,signal_recu)
-    title('Signal recu : bruit et diaphonie')
-end
-%}
