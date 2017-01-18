@@ -5,26 +5,19 @@ clear all;
 % stream
 % such that sum of all (bits/subchannel) = the data length.
 N = 255; %No. of sub-channels
-cyclic_prefix = 40; % Cyclic prefix length 40
+cyclic_prefix = 40;
 
 H = rep_impulsionnelle_canal(2000, .8e-3);
 Hr = [H(1:256) 0 conj(fliplr(H(1:256))) ];
 h = ifft(Hr, 'symmetric');
 
-h_est = channelEstimation(N, h);
 
-%h = [1 0.5 0.3 0.2 -0.1 0.02 0.05 0.08 0.01]; % channel impulse response.
+%h_est = channelEstimation(N, h, 2000, .8e-3, 25, 30);
+h_est = h(1:300);
 
 %% Transmitter
 %% Bit Allocation
-allocation_table = zeros(1, N);
-for i = 1:N
-    % Since the SNR of each subchannel is unknown, bit loading is random
-    % allocation_table(i) = ceil(rand*15); %Each tone is capable of
-    % carrying
-    % up to 15 bits regardless of the frequency at which it is transmitted.
-    allocation_table(i) = ceil(8);
-end
+allocation_table = allocationTableCalculator(h_est, 10, N);
 
 %% Data generation and assignment in each channel
 data = [];

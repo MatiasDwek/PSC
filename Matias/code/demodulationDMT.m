@@ -6,7 +6,9 @@ y = y_channel(cyclic_prefix+1:2*N+cyclic_prefix);
 % Due to the cyclic prefix the convolution is translated to a circular
 % convolution and hence the encoded complex symbol with its conjugate is 
 % received after FFT demodulation 
+
+% Zero forcing equalization and DMT demodulation
 y_dmt = fft(y)./fft(h,2*N);
 
-% removing the conjugate parts
+% Removing the conjugate parts
 y_qam = y_dmt(2:N);

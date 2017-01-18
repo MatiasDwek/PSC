@@ -20,22 +20,22 @@ errorRate = comm.ErrorRate('ComputationDelay',3);
 cyclic_prefix = 40; % Cyclic prefix length 40
 super_number = 10;
 
-H = rep_impulsionnelle_canal(1000, .8e-3);
+channel_length = 1e3;
+channel_width = .8e-3;
+interfering_signals = 25;
+
+H = rep_impulsionnelle_canal(channel_length, channel_width);
 max(abs(H));
 Hr = [H(1:256) 0 conj(fliplr(H(1:256))) ];
 h = ifft(Hr, 'symmetric');
 
 %% TRANSMISSION
 
-%% Bit Allocation
-allocation_table = zeros(1, N);
-for i = 1:N
-    % Since the SNR of each subchannel is unknown, bit loading is random
-    % allocation_table(i) = ceil(rand*15); %Each tone is capable of
-    % carrying
-    % up to 15 bits regardless of the frequency at which it is transmitted.
-    allocation_table(i) = 8;
-end
+% Bit Allocation
+allocation_table = allocationTableInitialisation();
+
+% CHANNEL ESTIMATION
+h = channelEstimation(N, h, channel_length, channel_width, interfering_signals, 30);
 
 words2 = [];
 for i = 1 : super_number

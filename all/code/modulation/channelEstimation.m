@@ -1,7 +1,7 @@
-function h_est = channelEstimation(N, h)
+function h_est = channelEstimation(N, h, channel_length, channel_width, n_int, mean_weight)
 
 cyclic_prefix = 40; % Cyclic prefix length 40
-mean_weight = 30;
+
 
 %% Transmitter
 %% Bit Allocation
@@ -37,7 +37,7 @@ for i = 1:mean_weight
     x_dmt = modulationDMT(x_qam, N, cyclic_prefix);
 
     %% Channel
-    y_channel = canal_ext(x_dmt, 2000, .8e-3, 25);
+    y_channel = canal_ext(x_dmt, channel_length, channel_width, n_int);
     y_all = [y_all; y_channel];
 end
 
